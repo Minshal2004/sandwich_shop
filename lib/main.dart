@@ -30,10 +30,12 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  int _quantity = 0;
-  String _note = '';
-  String _sandwichType = 'Footlong'; // 🆕 New state variable
-  final TextEditingController _noteController = TextEditingController();
+  
+  late final OrderRepository _orderRepository;
+  final TextEditingController _notesController = TextEditingController();
+  bool _isFootlong = true;
+  bool _isToasted = false;
+  BreadType _selectedBreadType = BreadType.white;
 
   void _increaseQuantity() {
     if (_quantity < widget.maxQuantity) {
