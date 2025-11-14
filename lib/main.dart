@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum BreadType { white, wheat, wholemeal }
+
 void main() {
   runApp(const App());
 }
