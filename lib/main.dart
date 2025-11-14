@@ -4,171 +4,196 @@ void main() {
   runApp(const App());
 }
 
-// Main App
-
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Sandwich Shop App',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Sandwich Counter')),
-        body: const Column(
-          children: [
-            Padding(
-              padding:
-                  EdgeInsets.only(top: 12.0, left: 12.0, right: 12.0),
-              child: Row(
+      home: OrderScreen(),
+    );
+  }
+}
+
+class OrderScreen extends StatefulWidget {
+  final int maxQuantity;
+
+  const OrderScreen({super.key, this.maxQuantity = 10});
+
+  @override
+  State<OrderScreen> createState() {
+    return _OrderScreenState();
+  }
+}
+
+class _OrderScreenState extends State<OrderScreen> {
+  int _quantity = 0;
+  String _note = '';
+  String _sandwichType = 'Footlong'; // 🆕 New state variable
+  final TextEditingController _noteController = TextEditingController();
+
+  void _increaseQuantity() {
+    if (_quantity < widget.maxQuantity) {
+      setState(() => _quantity++);
+    }
+  }
+
+  void _decreaseQuantity() {
+    if (_quantity > 0) {
+      setState(() => _quantity--);
+    }
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool canAdd = _quantity < widget.maxQuantity;
+    final bool canRemove = _quantity > 0;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sandwich Counter'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Display sandwich order summary
+              OrderItemDisplay(
+                _quantity,
+                _sandwichType,
+              ),
+
+              const SizedBox(height: 20),
+
+              // 🆕 Sandwich type selector
+              SegmentedButton<String>(
+                segments: const <ButtonSegment<String>>[
+                  ButtonSegment(
+                    value: 'Footlong',
+                    label: Text('Footlong'),
+                    icon: Icon(Icons.straighten),
+                  ),
+                  ButtonSegment(
+                    value: 'Six-inch',
+                    label: Text('Six-inch'),
+                    icon: Icon(Icons.cut),
+                  ),
+                ],
+                selected: <String>{_sandwichType},
+                onSelectionChanged: (Set<String> newSelection) {
+                  setState(() {
+                    _sandwichType = newSelection.first;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Notes input field
+              TextField(
+                controller: _noteController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Add a note (e.g., "no onions", "extra pickles")',
+                ),
+                onChanged: (value) => setState(() => _note = value),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Add / Remove buttons
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: OrderCompactDisplay(3, 'BLT sandwich(es)')),
-                  SizedBox(width: 8),
-                  Expanded(child: OrderCompactDisplay(3, 'Club sandwich(es)')),
-                  SizedBox(width: 8),
-                  Expanded(
-                      child: OrderCompactDisplay(2, 'Veggie sandwich(es)')),
+                  StyledButton(
+                    label: 'Add',
+                    icon: Icons.add,
+                    color: Colors.green,
+                    onPressed: canAdd ? _increaseQuantity : null,
+                  ),
+                  StyledButton(
+                    label: 'Remove',
+                    icon: Icons.remove,
+                    color: Colors.red,
+                    onPressed: canRemove ? _decreaseQuantity : null,
+                  ),
                 ],
               ),
-            ),
-            Expanded(
-              child: Center(
-                child: OrderItemDisplay(5, 'Footlong'),
-              ),
-            ),
-          ],
+
+              const SizedBox(height: 20),
+
+              // Display user note if any
+              if (_note.isNotEmpty)
+                Text(
+                  'Note: $_note',
+                  style: const TextStyle(fontStyle: FontStyle.italic),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class OrderItemDisplay extends StatelessWidget {
-  final String itemType;
+// Styled reusable button
+class StyledButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback? onPressed;
 
+  const StyledButton({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: onPressed == null ? Colors.grey : color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        icon: Icon(icon),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+// Displays the current sandwich order
+class OrderItemDisplay extends StatelessWidget {
   final int quantity;
+  final String itemType;
 
   const OrderItemDisplay(this.quantity, this.itemType, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      height: 200,
-      color: Colors.blue,
-      alignment: Alignment.center,
-      child: Text(
-        '$quantity $itemType sandwich(es): ${List.filled(quantity, '🥪').join()}',
-        style: const TextStyle(color: Colors.black, fontSize: 18),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-}
-
-// Compact display for top row
-
-class OrderCompactDisplay extends StatelessWidget {
-  final String itemType;
-
-  final int quantity;
-
-  const OrderCompactDisplay(this.quantity, this.itemType, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Quantity first
-
-          Text(
-            '$quantity ',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-
-          // Sandwich name and emoji together
-
-          Expanded(
-            child: Text(
-              '$itemType ${List.filled(quantity, '🥪').join()}',
-              style: const TextStyle(fontSize: 16),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Example leftover template widgets (you can remove if not needed)
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sandwich Shop App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-      ),
-      home: const MyHomePage(title: 'My Sandwich Shop'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Welcome to my shop!',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+    return Text(
+      '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
+      style: const TextStyle(fontSize: 18),
+      textAlign: TextAlign.center,
     );
   }
 }
