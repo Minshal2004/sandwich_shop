@@ -125,6 +125,7 @@ class _OrderScreenState extends State<OrderScreen> {
               const SizedBox(height: 20),
               Text(
                 'Total Price: £${price.toStringAsFixed(2)}',
+                key: const Key('total_price_display'),
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
