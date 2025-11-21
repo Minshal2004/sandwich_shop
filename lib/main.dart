@@ -110,7 +110,8 @@ class _OrderScreenState extends State<OrderScreen> {
           style: heading1,
         ),
       ),
-      body: Center(
+      body: SingleChildScrollView(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -193,6 +194,7 @@ class _OrderScreenState extends State<OrderScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
