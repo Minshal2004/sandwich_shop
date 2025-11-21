@@ -35,6 +35,7 @@ class _OrderScreenState extends State<OrderScreen> {
   late final OrderRepository _orderRepository;
   final TextEditingController _notesController = TextEditingController();
   bool _isFootlong = true;
+  bool _isToasted = false;
   BreadType _selectedBreadType = BreadType.white;
 
   @override
@@ -79,11 +80,12 @@ class _OrderScreenState extends State<OrderScreen> {
   List<DropdownMenuEntry<BreadType>> _buildDropdownEntries() {
     List<DropdownMenuEntry<BreadType>> entries = [];
     for (BreadType bread in BreadType.values) {
-      DropdownMenuEntry<BreadType> newEntry = DropdownMenuEntry<BreadType>(
-        value: bread,
-        label: bread.name,
+      entries.add(
+        DropdownMenuEntry<BreadType>(
+          value: bread,
+          label: bread.name,
+        ),
       );
-      entries.add(newEntry);
     }
     return entries;
   }
@@ -91,7 +93,6 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     String sandwichType = _isFootlong ? 'footlong' : 'six-inch';
-
     String noteForDisplay = _notesController.text.isEmpty
         ? 'No notes added.'
         : _notesController.text;
@@ -112,6 +113,7 @@ class _OrderScreenState extends State<OrderScreen> {
               itemType: sandwichType,
               breadType: _selectedBreadType,
               orderNote: noteForDisplay,
+              isToasted: _isToasted,
             ),
             const SizedBox(height: 20),
             Row(
@@ -119,10 +121,26 @@ class _OrderScreenState extends State<OrderScreen> {
               children: [
                 const Text('six-inch', style: normalText),
                 Switch(
+                  key: const Key('sandwich_type_switch'),
                   value: _isFootlong,
                   onChanged: _onSandwichTypeChanged,
                 ),
                 const Text('footlong', style: normalText),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('untoasted', style: normalText),
+                Switch(
+                  key: const Key('toasted_switch'),
+                  value: _isToasted,
+                  onChanged: (value) {
+                    setState(() => _isToasted = value);
+                  },
+                ),
+                const Text('toasted', style: normalText),
               ],
             ),
             const SizedBox(height: 10),
@@ -169,7 +187,6 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 }
 
-// Styled reusable button
 class StyledButton extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -205,12 +222,12 @@ class StyledButton extends StatelessWidget {
   }
 }
 
-// Displays the current sandwich order
 class OrderItemDisplay extends StatelessWidget {
   final int quantity;
   final String itemType;
   final BreadType breadType;
   final String orderNote;
+  final bool isToasted;
 
   const OrderItemDisplay({
     super.key,
@@ -218,6 +235,7 @@ class OrderItemDisplay extends StatelessWidget {
     required this.itemType,
     required this.breadType,
     required this.orderNote,
+    required this.isToasted,
   });
 
   @override
@@ -232,6 +250,11 @@ class OrderItemDisplay extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           'Bread: ${breadType.name}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'Toasted: ${isToasted ? 'Yes' : 'No'}',
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 10),

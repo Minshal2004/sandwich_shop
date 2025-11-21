@@ -49,4 +49,30 @@ void main() {
     expect(find.text('2'), findsNothing);
     expect(find.text('1'), findsOneWidget);
   });
+
+  testWidgets('Switch toggles between six-inch and footlong',
+      (WidgetTester tester) async {
+    // Build the app and trigger a frame.
+    await tester.pumpWidget(const App());
+
+    // Verify that the initial state is 'footlong'.
+    expect(find.text('footlong'), findsOneWidget);
+    expect(find.text('six-inch'), findsOneWidget);
+
+    // Tap the Switch to toggle to 'six-inch'.
+    await tester.tap(find.byType(Switch));
+    await tester.pump();
+
+    // Verify that the state has changed to 'six-inch'.
+    expect(find.text('six-inch'), findsOneWidget);
+    expect(find.text('footlong'), findsNothing);
+
+    // Tap the Switch again to toggle back to 'footlong'.
+    await tester.tap(find.byType(Switch));
+    await tester.pump();
+
+    // Verify that the state has changed back to 'footlong'.
+    expect(find.text('footlong'), findsOneWidget);
+    expect(find.text('six-inch'), findsOneWidget);
+  });
 }
