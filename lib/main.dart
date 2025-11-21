@@ -111,90 +111,91 @@ class _OrderScreenState extends State<OrderScreen> {
         ),
       ),
       body: SingleChildScrollView(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            OrderItemDisplay(
-              quantity: _orderRepository.quantity,
-              itemType: sandwichType,
-              breadType: _selectedBreadType,
-              orderNote: noteForDisplay,
-              isToasted: _isToasted,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Total Price: £${price.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('six-inch', style: normalText),
-                Switch(
-                  key: const Key('sandwich_type_switch'),
-                  value: _isFootlong,
-                  onChanged: _onSandwichTypeChanged,
-                ),
-                const Text('footlong', style: normalText),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('untoasted', style: normalText),
-                Switch(
-                  key: const Key('toasted_switch'),
-                  value: _isToasted,
-                  onChanged: (value) {
-                    setState(() => _isToasted = value);
-                  },
-                ),
-                const Text('toasted', style: normalText),
-              ],
-            ),
-            const SizedBox(height: 10),
-            DropdownMenu<BreadType>(
-              textStyle: normalText,
-              initialSelection: _selectedBreadType,
-              onSelected: _onBreadTypeSelected,
-              dropdownMenuEntries: _buildDropdownEntries(),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(40.0),
-              child: TextField(
-                key: const Key('notes_textfield'),
-                controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Add a note (e.g., no onions)',
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              OrderItemDisplay(
+                quantity: _orderRepository.quantity,
+                itemType: sandwichType,
+                breadType: _selectedBreadType,
+                orderNote: noteForDisplay,
+                isToasted: _isToasted,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Total Price: £${price.toStringAsFixed(2)}',
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('six-inch', style: normalText),
+                  Switch(
+                    key: const Key('sandwich_type_switch'),
+                    value: _isFootlong,
+                    onChanged: _onSandwichTypeChanged,
+                  ),
+                  const Text('footlong', style: normalText),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('untoasted', style: normalText),
+                  Switch(
+                    key: const Key('toasted_switch'),
+                    value: _isToasted,
+                    onChanged: (value) {
+                      setState(() => _isToasted = value);
+                    },
+                  ),
+                  const Text('toasted', style: normalText),
+                ],
+              ),
+              const SizedBox(height: 10),
+              DropdownMenu<BreadType>(
+                textStyle: normalText,
+                initialSelection: _selectedBreadType,
+                onSelected: _onBreadTypeSelected,
+                dropdownMenuEntries: _buildDropdownEntries(),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: TextField(
+                  key: const Key('notes_textfield'),
+                  controller: _notesController,
+                  decoration: const InputDecoration(
+                    labelText: 'Add a note (e.g., no onions)',
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                StyledButton(
-                  onPressed: _getIncreaseCallback(),
-                  icon: Icons.add,
-                  label: 'Add',
-                  color: Colors.green,
-                ),
-                const SizedBox(width: 8),
-                StyledButton(
-                  onPressed: _getDecreaseCallback(),
-                  icon: Icons.remove,
-                  label: 'Remove',
-                  color: Colors.red,
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StyledButton(
+                    onPressed: _getIncreaseCallback(),
+                    icon: Icons.add,
+                    label: 'Add',
+                    color: Colors.green,
+                  ),
+                  const SizedBox(width: 8),
+                  StyledButton(
+                    onPressed: _getDecreaseCallback(),
+                    icon: Icons.remove,
+                    label: 'Remove',
+                    color: Colors.red,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -257,6 +258,7 @@ class OrderItemDisplay extends StatelessWidget {
       children: [
         Text(
           '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
+          key: const Key('quantity_display'),
           style: const TextStyle(fontSize: 18),
           textAlign: TextAlign.center,
         ),
