@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/repositories/order_repository.dart';
+import 'package:sandwich_shop/repositories/PricingRepository.dart';
 
 void main() {
   runApp(const App());
@@ -97,6 +98,11 @@ class _OrderScreenState extends State<OrderScreen> {
         ? 'No notes added.'
         : _notesController.text;
 
+    final price = PricingRepository(
+      quantity: _orderRepository.quantity,
+      isFootlong: _isFootlong,
+    ).getTotalPrice();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -114,6 +120,11 @@ class _OrderScreenState extends State<OrderScreen> {
               breadType: _selectedBreadType,
               orderNote: noteForDisplay,
               isToasted: _isToasted,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Total Price: £${price.toStringAsFixed(2)}',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Row(
