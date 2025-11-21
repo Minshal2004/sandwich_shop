@@ -3,26 +3,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sandwich_shop/main.dart';
 
 void main() {
-  testWidgets('Counter increments test', (WidgetTester tester) async {
+  testWidgets('Quantity increments correctly', (WidgetTester tester) async {
     await tester.pumpWidget(const App());
 
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.textContaining('0'), findsOneWidget);
+    expect(find.textContaining('1'), findsNothing);
 
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.textContaining('0'), findsNothing);
+    expect(find.textContaining('1'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
-    expect(find.text('1'), findsNothing);
-    expect(find.text('2'), findsOneWidget);
+    expect(find.textContaining('1'), findsNothing);
+    expect(find.textContaining('2'), findsOneWidget);
   });
 
-  testWidgets('Counter decrements test', (WidgetTester tester) async {
+  testWidgets('Quantity decrements correctly', (WidgetTester tester) async {
     await tester.pumpWidget(const App());
 
     await tester.tap(find.byIcon(Icons.add));
@@ -30,13 +30,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
-    expect(find.text('2'), findsOneWidget);
+    expect(find.textContaining('2'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.remove));
     await tester.pump();
 
-    expect(find.text('2'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.textContaining('2'), findsNothing);
+    expect(find.textContaining('1'), findsOneWidget);
   });
 
   testWidgets('Switch toggles between six-inch and footlong',
@@ -63,16 +63,44 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(const App());
 
-    expect(find.text('Toasted: No'), findsOneWidget);
+    expect(find.textContaining('Toasted: No'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('toasted_switch')));
     await tester.pump();
 
-    expect(find.text('Toasted: Yes'), findsOneWidget);
+    expect(find.textContaining('Toasted: Yes'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('toasted_switch')));
     await tester.pump();
 
-    expect(find.text('Toasted: No'), findsOneWidget);
+    expect(find.textContaining('Toasted: No'), findsOneWidget);
+  });
+
+  testWidgets('Total price updates correctly with quantity and type',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const App());
+
+    // Initial price should be for 0 footlongs
+    expect(find.textContaining('Total Price: £11.00'), findsOneWidget);
+
+    // Tap Add (+)
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+
+    // Now 1 footlong → £11
+    expect(find.textContaining('Total Price: £11.00'), findsOneWidget);
+
+    // Tap Add (+) again → 2 footlongs → £22
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+
+    expect(find.textContaining('Total Price: £22.00'), findsOneWidget);
+
+    // Toggle to six-inch → price should change
+    await tester.tap(find.byKey(const Key('sandwich_type_switch')));
+    await tester.pump();
+
+    // 2 six-inch sandwiches → 2 * £7 = £14
+    expect(find.textContaining('Total Price: £14.00'), findsOneWidget);
   });
 }
