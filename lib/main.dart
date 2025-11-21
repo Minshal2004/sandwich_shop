@@ -27,9 +27,7 @@ class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key, this.maxQuantity = 5});
 
   @override
-  State<OrderScreen> createState() {
-    return _OrderScreenState();
-  }
+  State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
@@ -79,16 +77,12 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   List<DropdownMenuEntry<BreadType>> _buildDropdownEntries() {
-    List<DropdownMenuEntry<BreadType>> entries = [];
-    for (BreadType bread in BreadType.values) {
-      entries.add(
-        DropdownMenuEntry<BreadType>(
-          value: bread,
-          label: bread.name,
-        ),
-      );
-    }
-    return entries;
+    return BreadType.values
+        .map((bread) => DropdownMenuEntry<BreadType>(
+              value: bread,
+              label: bread.name,
+            ))
+        .toList();
   }
 
   @override
@@ -125,7 +119,7 @@ class _OrderScreenState extends State<OrderScreen> {
               const SizedBox(height: 20),
               Text(
                 'Total Price: £${price.toStringAsFixed(2)}',
-                key: const Key('total_price_display'),
+                key: const Key('total_price_display'), // <-- key added
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -150,9 +144,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   Switch(
                     key: const Key('toasted_switch'),
                     value: _isToasted,
-                    onChanged: (value) {
-                      setState(() => _isToasted = value);
-                    },
+                    onChanged: (value) => setState(() => _isToasted = value),
                   ),
                   const Text('toasted', style: normalText),
                 ],
