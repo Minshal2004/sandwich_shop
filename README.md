@@ -1,16 +1,24 @@
-# sandwich_shop
+# Sandwich Shop
 
-A new Flutter project.
+A Flutter application for managing sandwich orders. This project demonstrates the use of Flutter widgets, state management, and testing to build a functional and interactive app.
+
+## Features
+
+- Increment and decrement counters for sandwich orders.
+- Toggle switches for sandwich size (six-inch or footlong) and toasted options.
+- Responsive UI with scrollable layouts.
+- Unit and widget tests for app functionality.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- [Flutter SDK](https://flutter.dev/docs/get-started/install)
+- Dart (comes with Flutter)
+- A code editor like [Visual Studio Code](https://code.visualstudio.com/) or Android Studio.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
