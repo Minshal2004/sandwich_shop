@@ -37,6 +37,8 @@ class _OrderScreenState extends State<OrderScreen> {
   BreadType _selectedBreadType = BreadType.white;
   int _quantity = 1;
 
+  String _confirmationMessage = ''; // <-- Add this state variable
+
   @override
   void initState() {
     super.initState();
@@ -51,7 +53,6 @@ class _OrderScreenState extends State<OrderScreen> {
     super.dispose();
   }
 
-  // FIXED: Convert Sandwich to CartItem
   void _addToCart() {
     if (_quantity > 0) {
       for (int i = 0; i < _quantity; i++) {
@@ -59,14 +60,21 @@ class _OrderScreenState extends State<OrderScreen> {
           id: UniqueKey().toString(),
           name:
               '${_isFootlong ? "Footlong" : "Six-inch"} ${_selectedSandwichType.name} on ${_selectedBreadType.name} bread',
-          price: 5.0, // replace with actual pricing logic
+          price: 5.0,
         );
         _cart.addItem(cartItem);
       }
 
       String sizeText = _isFootlong ? 'footlong' : 'six-inch';
-      debugPrint(
-          'Added $_quantity $sizeText ${_selectedSandwichType.name} sandwich(es) to cart');
+      final message =
+          'Added $_quantity $sizeText ${_selectedSandwichType.name} sandwich(es) to cart';
+
+      // Update state to show message in UI
+      setState(() {
+        _confirmationMessage = message;
+      });
+
+      debugPrint(message);
     }
   }
 
@@ -191,6 +199,16 @@ class _OrderScreenState extends State<OrderScreen> {
                 label: 'Add to Cart',
                 backgroundColor: Colors.green,
               ),
+              const SizedBox(height: 10),
+              // Display confirmation message
+              if (_confirmationMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    _confirmationMessage,
+                    style: normalText.copyWith(color: Colors.green),
+                  ),
+                ),
               const SizedBox(height: 20),
             ],
           ),
