@@ -14,7 +14,7 @@ A Flutter application for managing sandwich orders. This project demonstrates th
 ### Prerequisites
 
 - [Flutter SDK](https://flutter.dev/docs/get-started/install)
-- Dart (comes with Flutter)
+ch- Dart (comes with Flutter)
 - A code editor like [Visual Studio Code](https://code.visualstudio.com/) or Android Studio.
 
 ### Installation

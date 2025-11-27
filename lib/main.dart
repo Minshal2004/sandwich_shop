@@ -27,9 +27,7 @@ class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key, this.maxQuantity = 10});
 
   @override
-  State<OrderScreen> createState() {
-    return _OrderScreenState();
-  }
+  State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
@@ -78,18 +76,6 @@ class _OrderScreenState extends State<OrderScreen> {
     }
   }
 
-  List<DropdownMenuEntry<BreadType>> _buildDropdownEntries() {
-    List<DropdownMenuEntry<BreadType>> entries = [];
-    for (BreadType bread in BreadType.values) {
-      DropdownMenuEntry<BreadType> newEntry = DropdownMenuEntry<BreadType>(
-        value: bread,
-        label: bread.name,
-      );
-      entries.add(newEntry);
-    }
-    return entries;
-  }
-
   @override
   Widget build(BuildContext context) {
     final pricingRepository = PricingRepository(
@@ -97,24 +83,14 @@ class _OrderScreenState extends State<OrderScreen> {
       isFootlong: _isFootlong,
     );
     final totalPrice = pricingRepository.getTotalPrice();
-    String sandwichType = 'footlong';
-    if (!_isFootlong) {
-      sandwichType = 'six-inch';
-    }
-
-    String noteForDisplay;
-    if (_notesController.text.isEmpty) {
-      noteForDisplay = 'No notes added.';
-    } else {
-      noteForDisplay = _notesController.text;
-    }
+    String sandwichType = _isFootlong ? 'footlong' : 'six-inch';
+    String noteForDisplay = _notesController.text.isEmpty
+        ? 'No notes added.'
+        : _notesController.text;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Sandwich Counter',
-          style: heading1,
-        ),
+        title: const Text('Sandwich Counter', style: heading1),
       ),
       body: Center(
         child: Column(
@@ -126,10 +102,8 @@ class _OrderScreenState extends State<OrderScreen> {
               breadType: _selectedBreadType,
               orderNote: noteForDisplay,
             ),
-            Text(
-              'Total Price: £${totalPrice.toStringAsFixed(2)}',
-              style: heading1,
-            ),
+            Text('Total Price: £${totalPrice.toStringAsFixed(2)}',
+                style: heading1),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -150,9 +124,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 Switch(
                   key: const Key('toastedSwitch'),
                   value: _isToasted,
-                  onChanged: (value) {
-                    setState(() => _isToasted = value);
-                  },
+                  onChanged: (value) => setState(() => _isToasted = value),
                 ),
                 const Text('toasted', style: normalText),
               ],
@@ -185,6 +157,7 @@ class _OrderScreenState extends State<OrderScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 StyledButton(
+                  key: const Key('addButton'),
                   onPressed: _getIncreaseCallback(),
                   icon: Icons.add,
                   label: 'Add',
@@ -192,6 +165,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 const SizedBox(width: 8),
                 StyledButton(
+                  key: const Key('removeButton'),
                   onPressed: _getDecreaseCallback(),
                   icon: Icons.remove,
                   label: 'Remove',
@@ -222,15 +196,13 @@ class StyledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ButtonStyle myButtonStyle = ElevatedButton.styleFrom(
-      backgroundColor: backgroundColor,
-      foregroundColor: Colors.white,
-      textStyle: normalText,
-    );
-
     return ElevatedButton(
       onPressed: onPressed,
-      style: myButtonStyle,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: Colors.white,
+        textStyle: normalText,
+      ),
       child: Row(
         children: [
           Icon(icon),
@@ -260,18 +232,11 @@ class OrderItemDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     String displayText =
         '$quantity ${breadType.name} $itemType sandwich(es): ${'🥪' * quantity}';
-
     return Column(
       children: [
-        Text(
-          displayText,
-          style: normalText,
-        ),
+        Text(displayText, style: normalText),
         const SizedBox(height: 8),
-        Text(
-          'Note: $orderNote',
-          style: normalText,
-        ),
+        Text('Note: $orderNote', style: normalText),
       ],
     );
   }
