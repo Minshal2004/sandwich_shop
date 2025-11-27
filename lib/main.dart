@@ -37,7 +37,7 @@ class _OrderScreenState extends State<OrderScreen> {
   BreadType _selectedBreadType = BreadType.white;
   int _quantity = 1;
 
-  String _confirmationMessage = ''; // <-- Add this state variable
+  String _confirmationMessage = ''; // Display message after adding to cart
 
   @override
   void initState() {
@@ -65,11 +65,10 @@ class _OrderScreenState extends State<OrderScreen> {
         _cart.addItem(cartItem);
       }
 
-      String sizeText = _isFootlong ? 'footlong' : 'six-inch';
+      final sizeText = _isFootlong ? 'footlong' : 'six-inch';
       final message =
           'Added $_quantity $sizeText ${_selectedSandwichType.name} sandwich(es) to cart';
 
-      // Update state to show message in UI
       setState(() {
         _confirmationMessage = message;
       });
@@ -209,6 +208,30 @@ class _OrderScreenState extends State<OrderScreen> {
                     style: normalText.copyWith(color: Colors.green),
                   ),
                 ),
+              const SizedBox(height: 10),
+              // Permanent cart summary
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Card(
+                  color: Colors.grey[200],
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Cart Summary', style: heading1),
+                        const SizedBox(height: 8),
+                        Text('Total items: ${_cart.items.length}',
+                            style: normalText),
+                        Text(
+                          'Total price: \$${_cart.totalPrice.toStringAsFixed(2)}',
+                          style: normalText,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
             ],
           ),
