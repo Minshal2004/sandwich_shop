@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sandwich_shop/repositories/PricingRepository.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/repositories/order_repository.dart';
-import 'package:sandwich_shop/repositories/PricingRepository.dart';
 
 void main() {
   runApp(const App());
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Sandwich Shop App',
-      home: OrderScreen(),
+      home: OrderScreen(maxQuantity: 5),
     );
   }
 }
@@ -24,10 +24,12 @@ class App extends StatelessWidget {
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
 
-  const OrderScreen({super.key, this.maxQuantity = 5});
+  const OrderScreen({super.key, this.maxQuantity = 10});
 
   @override
-  State<OrderScreen> createState() => _OrderScreenState();
+  State<OrderScreen> createState() {
+    return _OrderScreenState();
+  }
 }
 
 class _OrderScreenState extends State<OrderScreen> {
@@ -77,25 +79,35 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   List<DropdownMenuEntry<BreadType>> _buildDropdownEntries() {
-    return BreadType.values
-        .map((bread) => DropdownMenuEntry<BreadType>(
-              value: bread,
-              label: bread.name,
-            ))
-        .toList();
+    List<DropdownMenuEntry<BreadType>> entries = [];
+    for (BreadType bread in BreadType.values) {
+      DropdownMenuEntry<BreadType> newEntry = DropdownMenuEntry<BreadType>(
+        value: bread,
+        label: bread.name,
+      );
+      entries.add(newEntry);
+    }
+    return entries;
   }
 
   @override
   Widget build(BuildContext context) {
-    String sandwichType = _isFootlong ? 'footlong' : 'six-inch';
-    String noteForDisplay = _notesController.text.isEmpty
-        ? 'No notes added.'
-        : _notesController.text;
-
-    final price = PricingRepository(
+    final pricingRepository = PricingRepository(
       quantity: _orderRepository.quantity,
       isFootlong: _isFootlong,
-    ).getTotalPrice();
+    );
+    final totalPrice = pricingRepository.getTotalPrice();
+    String sandwichType = 'footlong';
+    if (!_isFootlong) {
+      sandwichType = 'six-inch';
+    }
+
+    String noteForDisplay;
+    if (_notesController.text.isEmpty) {
+      noteForDisplay = 'No notes added.';
+    } else {
+      noteForDisplay = _notesController.text;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -104,90 +116,90 @@ class _OrderScreenState extends State<OrderScreen> {
           style: heading1,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              OrderItemDisplay(
-                quantity: _orderRepository.quantity,
-                itemType: sandwichType,
-                breadType: _selectedBreadType,
-                orderNote: noteForDisplay,
-                isToasted: _isToasted,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Total Price: £${price.toStringAsFixed(2)}',
-                key: const Key('total_price_display'), // <-- key added
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('six-inch', style: normalText),
-                  Switch(
-                    key: const Key('sandwich_type_switch'),
-                    value: _isFootlong,
-                    onChanged: _onSandwichTypeChanged,
-                  ),
-                  const Text('footlong', style: normalText),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('untoasted', style: normalText),
-                  Switch(
-                    key: const Key('toasted_switch'),
-                    value: _isToasted,
-                    onChanged: (value) => setState(() => _isToasted = value),
-                  ),
-                  const Text('toasted', style: normalText),
-                ],
-              ),
-              const SizedBox(height: 10),
-              DropdownMenu<BreadType>(
-                textStyle: normalText,
-                initialSelection: _selectedBreadType,
-                onSelected: _onBreadTypeSelected,
-                dropdownMenuEntries: _buildDropdownEntries(),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: TextField(
-                  key: const Key('notes_textfield'),
-                  controller: _notesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Add a note (e.g., no onions)',
-                  ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            OrderItemDisplay(
+              quantity: _orderRepository.quantity,
+              itemType: sandwichType,
+              breadType: _selectedBreadType,
+              orderNote: noteForDisplay,
+            ),
+            Text(
+              'Total Price: £${totalPrice.toStringAsFixed(2)}',
+              style: heading1,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('six-inch', style: normalText),
+                Switch(
+                  key: const Key('sandwichTypeSwitch'),
+                  value: _isFootlong,
+                  onChanged: _onSandwichTypeChanged,
+                ),
+                const Text('footlong', style: normalText),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('untoasted', style: normalText),
+                Switch(
+                  key: const Key('toastedSwitch'),
+                  value: _isToasted,
+                  onChanged: (value) {
+                    setState(() => _isToasted = value);
+                  },
+                ),
+                const Text('toasted', style: normalText),
+              ],
+            ),
+            const SizedBox(height: 10),
+            DropdownButton<BreadType>(
+              value: _selectedBreadType,
+              items: BreadType.values.map((bread) {
+                return DropdownMenuItem<BreadType>(
+                  value: bread,
+                  child: Text(bread.name, style: normalText),
+                );
+              }).toList(),
+              onChanged: _onBreadTypeSelected,
+              style: normalText,
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: TextField(
+                key: const Key('notes_textfield'),
+                controller: _notesController,
+                decoration: const InputDecoration(
+                  labelText: 'Add a note (e.g., no onions)',
                 ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  StyledButton(
-                    onPressed: _getIncreaseCallback(),
-                    icon: Icons.add,
-                    label: 'Add',
-                    color: Colors.green,
-                  ),
-                  const SizedBox(width: 8),
-                  StyledButton(
-                    onPressed: _getDecreaseCallback(),
-                    icon: Icons.remove,
-                    label: 'Remove',
-                    color: Colors.red,
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                StyledButton(
+                  onPressed: _getIncreaseCallback(),
+                  icon: Icons.add,
+                  label: 'Add',
+                  backgroundColor: Colors.green,
+                ),
+                const SizedBox(width: 8),
+                StyledButton(
+                  onPressed: _getDecreaseCallback(),
+                  icon: Icons.remove,
+                  label: 'Remove',
+                  backgroundColor: Colors.red,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -195,35 +207,36 @@ class _OrderScreenState extends State<OrderScreen> {
 }
 
 class StyledButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
   final VoidCallback? onPressed;
+  final IconData icon;
+  final String label;
+  final Color backgroundColor;
 
   const StyledButton({
     super.key,
-    required this.label,
-    required this.icon,
-    required this.color,
     required this.onPressed,
+    required this.icon,
+    required this.label,
+    required this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: onPressed == null ? Colors.grey : color,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        icon: Icon(icon),
-        label: Text(label),
+    ButtonStyle myButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: backgroundColor,
+      foregroundColor: Colors.white,
+      textStyle: normalText,
+    );
+
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: myButtonStyle,
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: 8),
+          Text(label),
+        ],
       ),
     );
   }
@@ -234,7 +247,6 @@ class OrderItemDisplay extends StatelessWidget {
   final String itemType;
   final BreadType breadType;
   final String orderNote;
-  final bool isToasted;
 
   const OrderItemDisplay({
     super.key,
@@ -242,33 +254,23 @@ class OrderItemDisplay extends StatelessWidget {
     required this.itemType,
     required this.breadType,
     required this.orderNote,
-    required this.isToasted,
   });
 
   @override
   Widget build(BuildContext context) {
+    String displayText =
+        '$quantity ${breadType.name} $itemType sandwich(es): ${'🥪' * quantity}';
+
     return Column(
       children: [
         Text(
-          '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
-          key: const Key('quantity_display'),
-          style: const TextStyle(fontSize: 18),
-          textAlign: TextAlign.center,
+          displayText,
+          style: normalText,
         ),
-        const SizedBox(height: 10),
-        Text(
-          'Bread: ${breadType.name}',
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'Toasted: ${isToasted ? 'Yes' : 'No'}',
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Text(
           'Note: $orderNote',
-          style: const TextStyle(fontSize: 16),
+          style: normalText,
         ),
       ],
     );
