@@ -12,7 +12,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Sandwich Shop App',
       home: OrderScreen(maxQuantity: 5),
     );
@@ -136,7 +136,7 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sandwich Counter', style: heading1),
+        title: Text('Sandwich Counter', style: heading1),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -148,8 +148,8 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: Image.asset(
                   _getCurrentImagePath(),
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                      child: Text('Image not found', style: normalText)),
+                  errorBuilder: (context, error, stackTrace) =>
+                      Center(child: Text('Image not found', style: normalText)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -158,15 +158,15 @@ class _OrderScreenState extends State<OrderScreen> {
                 onChanged: _onSandwichTypeChanged,
                 items: _buildSandwichTypeEntries(),
                 isExpanded: true,
-                hint: const Text('Sandwich Type', style: normalText),
+                hint: Text('Sandwich Type', style: normalText),
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Six-inch', style: normalText),
+                  Text('Six-inch', style: normalText),
                   Switch(value: _isFootlong, onChanged: _onSizeChanged),
-                  const Text('Footlong', style: normalText),
+                  Text('Footlong', style: normalText),
                 ],
               ),
               const SizedBox(height: 20),
@@ -175,13 +175,13 @@ class _OrderScreenState extends State<OrderScreen> {
                 onChanged: _onBreadTypeChanged,
                 items: _buildBreadTypeEntries(),
                 isExpanded: true,
-                hint: const Text('Bread Type', style: normalText),
+                hint: Text('Bread Type', style: normalText),
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Quantity: ', style: normalText),
+                  Text('Quantity: ', style: normalText),
                   IconButton(
                       onPressed: _getDecreaseCallback(),
                       icon: const Icon(Icons.remove)),
