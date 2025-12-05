@@ -132,6 +132,46 @@ class _OrderScreenState extends State<OrderScreen> {
   VoidCallback? _getDecreaseCallback() =>
       _quantity > 0 ? _decreaseQuantity : null;
 
+  // Aggregate cart items by name for display (returns list of maps with name, count, price, items)
+  List<Map<String, dynamic>> _cartAggregates() {
+    final Map<String, List<CartItem>> groups = {};
+    for (final item in _cart.items) {
+      groups.putIfAbsent(item.name, () => []).add(item);
+    }
+    return groups.entries
+        .map((e) => {
+              'name': e.key,
+              'count': e.value.length,
+              'price': e.value.isNotEmpty ? e.value.first.price : 0.0,
+            })
+        .toList();
+  }
+
+  // Remove a single instance of the named cart item. If it was the last instance, the row disappears.
+  void _decrementCartItem(String name) {
+    final int index = _cart.items.indexWhere((i) => i.name == name);
+    if (index == -1) return;
+    final removed = _cart.items.removeAt(index);
+    setState(() {});
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Removed one ${removed.name}'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              // restore the removed item at the same position
+              final insertIndex =
+                  index <= _cart.items.length ? index : _cart.items.length;
+              _cart.items.insert(insertIndex, removed);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,7 +249,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                 ),
               const SizedBox(height: 10),
-              // Permanent cart summary
+              // Permanent cart summary (updated to allow decrement/removal)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Card(
@@ -227,11 +267,41 @@ class _OrderScreenState extends State<OrderScreen> {
                           'Total price: \$${_cart.totalPrice.toStringAsFixed(2)}',
                           style: normalText,
                         ),
+                        const SizedBox(height: 8),
+                        if (_cart.items.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('Cart is empty', style: normalText),
+                          )
+                        else
+                          ..._cartAggregates().map((entry) {
+                            final String name = entry['name'] as String;
+                            final int count = entry['count'] as int;
+                            final double price = entry['price'] as double;
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(name, style: normalText),
+                              subtitle: Text(
+                                  'Unit: \$${price.toStringAsFixed(2)}',
+                                  style: normalText),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () => _decrementCartItem(name),
+                                  ),
+                                  Text('$count', style: normalText),
+                                ],
+                              ),
+                            );
+                          }).toList(),
                       ],
                     ),
                   ),
                 ),
               ),
+
               const SizedBox(height: 20),
             ],
           ),
