@@ -12,7 +12,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Sandwich Shop App',
       home: OrderScreen(maxQuantity: 5),
     );
@@ -136,7 +136,7 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sandwich Counter', style: heading1),
+        title: const Text('Sandwich Counter', style: heading1),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -148,8 +148,8 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: Image.asset(
                   _getCurrentImagePath(),
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      Center(child: Text('Image not found', style: normalText)),
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                      child: Text('Image not found', style: normalText)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -158,15 +158,15 @@ class _OrderScreenState extends State<OrderScreen> {
                 onChanged: _onSandwichTypeChanged,
                 items: _buildSandwichTypeEntries(),
                 isExpanded: true,
-                hint: Text('Sandwich Type', style: normalText),
+                hint: const Text('Sandwich Type', style: normalText),
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Six-inch', style: normalText),
+                  const Text('Six-inch', style: normalText),
                   Switch(value: _isFootlong, onChanged: _onSizeChanged),
-                  Text('Footlong', style: normalText),
+                  const Text('Footlong', style: normalText),
                 ],
               ),
               const SizedBox(height: 20),
@@ -175,13 +175,13 @@ class _OrderScreenState extends State<OrderScreen> {
                 onChanged: _onBreadTypeChanged,
                 items: _buildBreadTypeEntries(),
                 isExpanded: true,
-                hint: Text('Bread Type', style: normalText),
+                hint: const Text('Bread Type', style: normalText),
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Quantity: ', style: normalText),
+                  const Text('Quantity: ', style: normalText),
                   IconButton(
                       onPressed: _getDecreaseCallback(),
                       icon: const Icon(Icons.remove)),
@@ -219,7 +219,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Cart Summary', style: heading1),
+                        const Text('Cart Summary', style: heading1),
                         const SizedBox(height: 8),
                         Text('Total items: ${_cart.items.length}',
                             style: normalText),
@@ -304,3 +304,6 @@ class OrderItemDisplay extends StatelessWidget {
     );
   }
 }
+
+// No changes required to this file to resolve the pubspec.yaml error.
+// Ensure you run `flutter run` from the folder that contains pubspec.yaml (project root).
