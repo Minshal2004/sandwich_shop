@@ -22,6 +22,14 @@ class Cart {
   bool get isEmpty => _items.isEmpty;
 
   bool get isNotEmpty => _items.isNotEmpty;
+
+  /// Remove a single CartItem instance matching [name].
+  /// Returns the removed CartItem if found, otherwise null.
+  CartItem? removeOneItemByName(String name) {
+    final int index = _items.indexWhere((i) => i.name == name);
+    if (index == -1) return null;
+    return _items.removeAt(index);
+  }
 }
 
 class CartItem {
