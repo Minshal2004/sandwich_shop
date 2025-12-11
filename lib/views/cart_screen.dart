@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
+import 'package:sandwich_shop/widgets/app_shell.dart';
 
 class CartScreen extends StatefulWidget {
   final Cart cart;
@@ -51,9 +52,10 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final aggregates = _cartAggregates();
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cart', style: heading1)),
-      body: Padding(
+    return AppShell(
+      current: 'cart',
+      title: 'Cart',
+      child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Card(
           color: Colors.grey[200],

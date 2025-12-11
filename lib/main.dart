@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 import 'package:sandwich_shop/models/cart.dart';
+import 'package:sandwich_shop/widgets/app_shell.dart';
 import 'package:sandwich_shop/views/profile_screen.dart';
 
 void main() {
@@ -175,11 +176,10 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sandwich Counter', style: heading1),
-      ),
-      body: Center(
+    return AppShell(
+      current: 'order',
+      title: 'Sandwich Counter',
+      child: Center(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
