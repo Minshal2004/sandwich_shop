@@ -1,89 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:sandwich_shop/views/about_screen.dart';
-import 'package:sandwich_shop/views/cart_screen.dart';
-import 'package:sandwich_shop/views/profile_screen.dart';
 
-class AppShell extends StatelessWidget {
-  final Widget child;
-  final String current; // 'order', 'cart', 'about', 'profile'
-  final String title;
+/// Lightweight navigation drawer used by screens.
+/// Uses named routes: '/order', '/cart', '/profile', '/about'.
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
 
-  const AppShell({
-    super.key,
-    required this.child,
-    required this.current,
-    required this.title,
-  });
-
-  Widget _drawerContents(BuildContext context) {
-    Widget item(String id, IconData icon, String label, Widget destination) {
-      final selected = id == current;
-      return ListTile(
-        leading: Icon(icon,
-            color: selected ? Theme.of(context).colorScheme.primary : null),
-        title: Text(label),
-        selected: selected,
-        onTap: () {
-          Navigator.of(context).pop(); // close drawer on narrow screens
-          if (id == current) return;
-          // Navigate to destination; use pushReplacement to avoid stacking duplicates
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => destination),
-          );
-        },
-      );
-    }
-
-    return ListView(
-      children: [
-        DrawerHeader(
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer),
-          child: const Text('Navigation', style: TextStyle(fontSize: 20)),
-        ),
-        item(
-            'order',
-            Icons.home,
-            'Order',
-            Navigator.of(context).widget is WidgetsBinding
-                ? Navigator.of(context).widget
-                : const SizedBox()),
-        item('cart', Icons.shopping_cart, 'Cart', const CartScreen()),
-        item('profile', Icons.person, 'Profile', const ProfileScreen()),
-        item('about', Icons.info, 'About', const AboutScreen()),
-      ],
+  Widget _item(BuildContext context, String id, IconData icon, String label,
+      String routeName) {
+    final ModalRoute<Object?>? route = ModalRoute.of(context);
+    final bool selected = route?.settings.name == routeName;
+    return ListTile(
+      leading: Icon(icon,
+          color: selected ? Theme.of(context).colorScheme.primary : null),
+      title: Text(label),
+      selected: selected,
+      onTap: () {
+        Navigator.of(context).maybePop(); // close drawer if open
+        if (selected) return;
+        Navigator.of(context).pushReplacementNamed(routeName);
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    const breakpoint = 700.0;
-    return LayoutBuilder(builder: (context, constraints) {
-      final isWide = constraints.maxWidth >= breakpoint;
-      if (isWide) {
-        // Persistent sidebar + content
-        return Scaffold(
-          appBar: AppBar(title: Text(title)),
-          body: Row(
-            children: [
-              Container(
-                width: 250,
-                color: Theme.of(context).drawerTheme.backgroundColor ??
-                    Theme.of(context).colorScheme.surfaceVariant,
-                child: _drawerContents(context),
-              ),
-              Expanded(child: child),
-            ],
+    return Drawer(
+      child: ListView(
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer),
+            child: const Text('Navigation', style: TextStyle(fontSize: 20)),
           ),
-        );
-      } else {
-        // Drawer overlay behavior
-        return Scaffold(
-          appBar: AppBar(title: Text(title)),
-          drawer: Drawer(child: _drawerContents(context)),
-          body: child,
-        );
-      }
-    });
+          _item(context, 'order', Icons.home, 'Order', '/order'),
+          _item(context, 'cart', Icons.shopping_cart, 'Cart', '/cart'),
+          _item(context, 'profile', Icons.person, 'Profile', '/profile'),
+          _item(context, 'about', Icons.info, 'About', '/about'),
+        ],
+      ),
+    );
   }
 }

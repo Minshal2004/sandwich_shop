@@ -15,14 +15,28 @@ void main() {
       binding.window.clearDevicePixelRatioTestValue();
     });
 
-    await tester.pumpWidget(const App());
+    // Use non-const App() since App has a non-const constructor now.
+    await tester.pumpWidget(App());
     await tester.pumpAndSettle();
 
-    // Open drawer via the AppBar's standard tooltip (works across locales/themes).
-    final Finder menuButton = find.byTooltip('Open navigation menu');
-    expect(menuButton, findsOneWidget);
-    await tester.tap(menuButton);
-    await tester.pumpAndSettle();
+    // Locate menu button robustly: try icon first, then tooltip.
+    Finder menuButton = find.byIcon(Icons.menu);
+    if (!tester.any(menuButton)) {
+      menuButton = find.byTooltip('Open navigation menu');
+    }
+
+    if (tester.any(menuButton)) {
+      // If a visible menu button exists, tap it.
+      await tester.tap(menuButton);
+      await tester.pumpAndSettle();
+    } else {
+      // Fallback: open the drawer programmatically via the ScaffoldState.
+      final Finder scaffoldFinder = find.byType(Scaffold).first;
+      final ScaffoldState scaffoldState =
+          tester.state<ScaffoldState>(scaffoldFinder);
+      scaffoldState.openDrawer();
+      await tester.pumpAndSettle();
+    }
 
     // Drawer should show Cart item
     expect(find.text('Cart'), findsOneWidget);

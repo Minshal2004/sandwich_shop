@@ -2,36 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 import 'package:sandwich_shop/models/cart.dart';
-import 'package:sandwich_shop/widgets/app_shell.dart';
 import 'package:sandwich_shop/views/profile_screen.dart';
+import 'package:sandwich_shop/views/cart_screen.dart';
+import 'package:sandwich_shop/views/about_screen.dart';
+import 'package:sandwich_shop/widgets/app_shell.dart';
 
 void main() {
-  runApp(const App());
+  runApp(App());
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  App({super.key});
+
+  // Shared cart instance reused across screens
+  final Cart sharedCart = Cart();
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Sandwich Shop App',
-      home: OrderScreen(maxQuantity: 5),
+      initialRoute: '/order',
+      routes: {
+        '/order': (context) => OrderScreen(cart: sharedCart, maxQuantity: 5),
+        '/cart': (context) => CartScreen(cart: sharedCart),
+        '/profile': (context) => const ProfileScreen(),
+        '/about': (context) => const AboutScreen(),
+      },
     );
   }
 }
 
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
+  final Cart cart;
 
-  const OrderScreen({super.key, this.maxQuantity = 10});
+  const OrderScreen({super.key, required this.cart, this.maxQuantity = 10});
 
   @override
   State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  final Cart _cart = Cart();
   final TextEditingController _notesController = TextEditingController();
 
   SandwichType _selectedSandwichType = SandwichType.veggieDelight;
@@ -64,7 +75,7 @@ class _OrderScreenState extends State<OrderScreen> {
               '${_isFootlong ? "Footlong" : "Six-inch"} ${_selectedSandwichType.name} on ${_selectedBreadType.name} bread',
           price: 5.0,
         );
-        _cart.addItem(cartItem);
+        widget.cart.addItem(cartItem);
       }
 
       final sizeText = _isFootlong ? 'footlong' : 'six-inch';
@@ -134,10 +145,10 @@ class _OrderScreenState extends State<OrderScreen> {
   VoidCallback? _getDecreaseCallback() =>
       _quantity > 0 ? _decreaseQuantity : null;
 
-  // Aggregate cart items by name for display (returns list of maps with name, count, price, items)
+  // Aggregate cart items by name for display (returns list of maps with name, count, price)
   List<Map<String, dynamic>> _cartAggregates() {
     final Map<String, List<CartItem>> groups = {};
-    for (final item in _cart.items) {
+    for (final item in widget.cart.items) {
       groups.putIfAbsent(item.name, () => []).add(item);
     }
     return groups.entries
@@ -151,9 +162,9 @@ class _OrderScreenState extends State<OrderScreen> {
 
   // Remove a single instance of the named cart item. If it was the last instance, the row disappears.
   void _decrementCartItem(String name) {
-    final int index = _cart.items.indexWhere((i) => i.name == name);
+    final int index = widget.cart.items.indexWhere((i) => i.name == name);
     if (index == -1) return;
-    final removed = _cart.items.removeAt(index);
+    final removed = widget.cart.items.removeAt(index);
     setState(() {});
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -163,10 +174,10 @@ class _OrderScreenState extends State<OrderScreen> {
           label: 'Undo',
           onPressed: () {
             setState(() {
-              // restore the removed item at the same position
-              final insertIndex =
-                  index <= _cart.items.length ? index : _cart.items.length;
-              _cart.items.insert(insertIndex, removed);
+              final insertIndex = index <= widget.cart.items.length
+                  ? index
+                  : widget.cart.items.length;
+              widget.cart.items.insert(insertIndex, removed);
             });
           },
         ),
@@ -176,10 +187,10 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppShell(
-      current: 'order',
-      title: 'Sandwich Counter',
-      child: Center(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sandwich Counter', style: heading1)),
+      drawer: const AppDrawer(),
+      body: Center(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -262,14 +273,14 @@ class _OrderScreenState extends State<OrderScreen> {
                       children: [
                         const Text('Cart Summary', style: heading1),
                         const SizedBox(height: 8),
-                        Text('Total items: ${_cart.items.length}',
+                        Text('Total items: ${widget.cart.items.length}',
                             style: normalText),
                         Text(
-                          'Total price: \$${_cart.totalPrice.toStringAsFixed(2)}',
+                          'Total price: \$${widget.cart.totalPrice.toStringAsFixed(2)}',
                           style: normalText,
                         ),
                         const SizedBox(height: 8),
-                        if (_cart.items.isEmpty)
+                        if (widget.cart.items.isEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text('Cart is empty', style: normalText),
@@ -308,9 +319,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                    );
+                    Navigator.of(context).pushNamed('/profile');
                   },
                   child: const Text('Profile'),
                 ),

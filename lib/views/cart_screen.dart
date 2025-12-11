@@ -1,107 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:sandwich_shop/models/cart.dart';
-import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/widgets/app_shell.dart';
+import 'package:sandwich_shop/views/app_styles.dart';
+import 'package:sandwich_shop/models/cart.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends StatelessWidget {
   final Cart cart;
 
   const CartScreen({super.key, required this.cart});
 
   @override
-  State<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  // Aggregate helper (same logic as used elsewhere)
-  List<Map<String, dynamic>> _cartAggregates() {
-    final Map<String, List<CartItem>> groups = {};
-    for (final item in widget.cart.items) {
-      groups.putIfAbsent(item.name, () => []).add(item);
-    }
-    return groups.entries
-        .map((e) => {
-              'name': e.key,
-              'count': e.value.length,
-              'price': e.value.isNotEmpty ? e.value.first.price : 0.0,
-            })
-        .toList();
-  }
-
-  void _decrementItem(String name) {
-    final removed = widget.cart.removeOneItemByName(name);
-    if (removed == null) return;
-    setState(() {});
-    // show undo snack - re-add removed item if undone
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Removed one $name'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            setState(() {
-              widget.cart.addItem(removed);
-            });
-          },
-        ),
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final aggregates = _cartAggregates();
-    return AppShell(
-      current: 'cart',
-      title: 'Cart',
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Card(
-          color: Colors.grey[200],
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Cart Summary', style: heading1),
-                const SizedBox(height: 8),
-                Text('Total items: ${widget.cart.items.length}',
-                    style: normalText),
-                Text(
-                    'Total price: \$${widget.cart.totalPrice.toStringAsFixed(2)}',
-                    style: normalText),
-                const SizedBox(height: 8),
-                if (aggregates.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text('Cart is empty', style: normalText),
-                  )
-                else
-                  ...aggregates.map((entry) {
-                    final String name = entry['name'] as String;
-                    final int count = entry['count'] as int;
-                    final double price = entry['price'] as double;
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(name, style: normalText),
-                      subtitle: Text('Unit: \$${price.toStringAsFixed(2)}',
-                          style: normalText),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Enabled minus button: decreases quantity by one,
-                          // removing the item if count reaches zero.
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: () => _decrementItem(name),
-                          ),
-                          Text('$count', style: normalText),
-                        ],
+    // Aggregate counts by name
+    final Map<String, int> counts = {};
+    for (final item in cart.items) {
+      counts[item.name] = (counts[item.name] ?? 0) + 1;
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Cart', style: heading1)),
+      drawer: const AppDrawer(),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Cart Screen', style: heading1),
+                  const SizedBox(height: 8),
+                  if (cart.items.isEmpty)
+                    const Text('Cart is empty.')
+                  else ...[
+                    for (final entry in counts.entries)
+                      ListTile(
+                        title: Text(entry.key, style: normalText),
+                        trailing: Text('x${entry.value}', style: normalText),
                       ),
-                    );
-                  }).toList(),
-              ],
+                    const Divider(),
+                    Text('Total items: ${cart.items.length}',
+                        style: normalText),
+                    Text('Total price: \$${cart.totalPrice.toStringAsFixed(2)}',
+                        style: normalText),
+                  ],
+                ],
+              ),
             ),
           ),
         ),

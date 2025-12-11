@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/widgets/app_shell.dart';
+import 'package:sandwich_shop/views/app_styles.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _save() {
     final name = _nameController.text;
     final email = _emailController.text;
-    // Simple console output; no persistence/authentication in this iteration.
     debugPrint('Profile saved: name="$name", email="$email"');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile saved (console output)')),
@@ -31,10 +31,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppShell(
-      current: 'profile',
-      title: 'Profile',
-      child: Padding(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Profile', style: heading1)),
+      drawer: const AppDrawer(),
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
