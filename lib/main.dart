@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 import 'package:sandwich_shop/models/cart.dart';
+import 'package:sandwich_shop/views/profile_screen.dart';
 
 void main() {
   runApp(const App());
@@ -301,7 +302,19 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                 ),
               ),
-
+              const SizedBox(height: 20),
+              // Profile navigation button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  },
+                  child: const Text('Profile'),
+                ),
+              ),
               const SizedBox(height: 20),
             ],
           ),
