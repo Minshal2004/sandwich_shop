@@ -189,6 +189,14 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Sandwich Counter',
+      actions: [
+        CartIndicator(
+          itemCount: widget.cart.items.length,
+          onTap: () {
+            Navigator.of(context).pushNamed('/cart');
+          },
+        ),
+      ],
       body: Center(
         child: SingleChildScrollView(
           child: Column(
