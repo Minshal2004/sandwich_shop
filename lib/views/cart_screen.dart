@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sandwich_shop/widgets/app_shell.dart';
+import 'package:sandwich_shop/views/common_widgets.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/cart.dart';
 
@@ -16,9 +16,8 @@ class CartScreen extends StatelessWidget {
       counts[item.name] = (counts[item.name] ?? 0) + 1;
     }
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cart', style: heading1)),
-      drawer: const AppDrawer(),
+    return AppScaffold(
+      title: 'Cart',
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

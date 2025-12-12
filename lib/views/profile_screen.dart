@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sandwich_shop/widgets/app_shell.dart';
-import 'package:sandwich_shop/views/app_styles.dart';
+import 'package:sandwich_shop/views/common_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,9 +30,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile', style: heading1)),
-      drawer: const AppDrawer(),
+    return AppScaffold(
+      title: 'Profile',
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

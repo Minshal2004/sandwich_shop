@@ -5,7 +5,7 @@ import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/views/profile_screen.dart';
 import 'package:sandwich_shop/views/cart_screen.dart';
 import 'package:sandwich_shop/views/about_screen.dart';
-import 'package:sandwich_shop/widgets/app_shell.dart';
+import 'package:sandwich_shop/views/common_widgets.dart';
 
 void main() {
   runApp(App());
@@ -187,9 +187,8 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sandwich Counter', style: heading1)),
-      drawer: const AppDrawer(),
+    return AppScaffold(
+      title: 'Sandwich Counter',
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -281,8 +280,8 @@ class _OrderScreenState extends State<OrderScreen> {
                         ),
                         const SizedBox(height: 8),
                         if (widget.cart.items.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.only(top: 8.0),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
                             child: Text('Cart is empty', style: normalText),
                           )
                         else
@@ -328,41 +327,6 @@ class _OrderScreenState extends State<OrderScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class StyledButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final IconData icon;
-  final String label;
-  final Color backgroundColor;
-
-  const StyledButton({
-    super.key,
-    required this.onPressed,
-    required this.icon,
-    required this.label,
-    required this.backgroundColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        foregroundColor: Colors.white,
-        textStyle: normalText,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
       ),
     );
   }
