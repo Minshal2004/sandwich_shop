@@ -5,7 +5,7 @@ import 'package:sandwich_shop/main.dart';
 void main() {
   testWidgets('Profile screen opens and shows form fields',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const App());
+    await tester.pumpWidget(App());
     await tester.pumpAndSettle();
 
     // Scroll until the Profile button is visible, then tap it.
