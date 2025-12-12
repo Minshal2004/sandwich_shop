@@ -10,11 +10,11 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('About', style: heading1)),
       drawer: const AppDrawer(),
-      body: Center(
+      body: const Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Column(
-            children: const [
+            children: [
               Text('About', style: heading1),
               SizedBox(height: 8),
               Text('Sandwich Shop app demo.'),

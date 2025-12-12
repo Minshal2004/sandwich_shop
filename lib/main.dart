@@ -281,8 +281,8 @@ class _OrderScreenState extends State<OrderScreen> {
                         ),
                         const SizedBox(height: 8),
                         if (widget.cart.items.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8.0),
                             child: Text('Cart is empty', style: normalText),
                           )
                         else

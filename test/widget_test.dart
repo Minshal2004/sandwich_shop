@@ -10,7 +10,7 @@ Future<void> scrollIntoView(WidgetTester tester, Finder finder) async {
 void main() {
   testWidgets('Quantity increases when + is tapped',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const App());
+    await tester.pumpWidget(App());
 
     final plusButton = find.byIcon(Icons.add);
 
@@ -27,7 +27,7 @@ void main() {
 
   testWidgets('Quantity decreases when - is tapped',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const App());
+    await tester.pumpWidget(App());
 
     final minusButton = find.byIcon(Icons.remove);
     final plusButton = find.byIcon(Icons.add);
@@ -45,7 +45,7 @@ void main() {
 
   testWidgets('Switch toggles between six-inch and footlong',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const App());
+    await tester.pumpWidget(App());
 
     final switchFinder = find.byType(Switch);
 
@@ -72,7 +72,7 @@ void main() {
 
   testWidgets('Add to Cart updates summary and shows confirmation',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const App());
+    await tester.pumpWidget(App());
 
     final addButton = find.text('Add to Cart');
 
